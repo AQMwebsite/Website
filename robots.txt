@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aquamain.com/sitemap.xml
