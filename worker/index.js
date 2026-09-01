@@ -71,12 +71,10 @@ function dayKey() {
 async function withinDailyQuota(env, ip) {
   if (!env.FORM_KV) return true;
   const day = dayKey();
-  const ipKey = `ip:${ip}:${day}`;
-  const totalKey = `total:${day}`;
   try {
     const [ipRaw, totalRaw] = await Promise.all([
-      env.FORM_KV.get(ipKey),
-      env.FORM_KV.get(totalKey),
+      env.FORM_KV.get(`ip:${ip}:${day}`),
+      env.FORM_KV.get(`total:${day}`),
     ]);
     const ipCount = parseInt(ipRaw || '0', 10);
     const totalCount = parseInt(totalRaw || '0', 10);
@@ -84,14 +82,35 @@ async function withinDailyQuota(env, ip) {
       console.warn(`daily cap hit ip=${ip} ipCount=${ipCount} total=${totalCount}`);
       return false;
     }
-    await Promise.all([
-      env.FORM_KV.put(ipKey, String(ipCount + 1), { expirationTtl: COUNTER_TTL_SECONDS }),
-      env.FORM_KV.put(totalKey, String(totalCount + 1), { expirationTtl: COUNTER_TTL_SECONDS }),
-    ]);
     return true;
   } catch (err) {
     console.error('KV quota check failed, allowing through:', err.message);
     return true;
+  }
+}
+
+/**
+ * Count a submission against the daily caps.
+ * Called only after the email is actually delivered — a send that fails must
+ * not consume the visitor's allowance, or an outage would lock out the very
+ * people retrying because of it.
+ */
+async function recordSubmission(env, ip) {
+  if (!env.FORM_KV) return;
+  const day = dayKey();
+  const ipKey = `ip:${ip}:${day}`;
+  const totalKey = `total:${day}`;
+  try {
+    const [ipRaw, totalRaw] = await Promise.all([
+      env.FORM_KV.get(ipKey),
+      env.FORM_KV.get(totalKey),
+    ]);
+    await Promise.all([
+      env.FORM_KV.put(ipKey, String(parseInt(ipRaw || '0', 10) + 1), { expirationTtl: COUNTER_TTL_SECONDS }),
+      env.FORM_KV.put(totalKey, String(parseInt(totalRaw || '0', 10) + 1), { expirationTtl: COUNTER_TTL_SECONDS }),
+    ]);
+  } catch (err) {
+    console.error('KV counter update failed:', err.message);
   }
 }
 
@@ -134,16 +153,21 @@ function buildText(heading, rows) {
 }
 
 async function sendViaResend(apiKey, payload) {
+  const body = JSON.stringify(payload);
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(payload),
+    body,
   });
   if (!r.ok) {
-    const detail = await r.text().catch(() => '');
+    const detail = await r.text().catch((e) => '<unreadable: ' + e.message + '>');
+    console.error(
+      `Resend rejected ${r.status} ${r.statusText}: ${detail.slice(0, 300)}`,
+      `to=${JSON.stringify(payload.to)} attachments=${payload.attachments ? payload.attachments.length : 0}`
+    );
     throw new Error(`Resend ${r.status}: ${detail.slice(0, 300)}`);
   }
   return r.json();
@@ -295,6 +319,8 @@ export default {
         origin
       );
     }
+
+    await recordSubmission(env, ip);
 
     return json({ success: true }, 200, origin);
   },
