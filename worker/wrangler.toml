@@ -2,5 +2,10 @@ name = "aquamain-forms"
 main = "index.js"
 compatibility_date = "2026-09-01"
 
+# Served at https://aquamain-forms.aquamain.workers.dev
+workers_dev = true
+# Preview URLs would expose extra unauthenticated hostnames for the same Worker; not needed.
+preview_urls = false
+
 # Secrets are NOT set here. Set them once, encrypted, with:
 #   npx wrangler secret put RESEND_API_KEY
