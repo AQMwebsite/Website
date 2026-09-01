@@ -63,6 +63,34 @@ The honeypot returns success without sending, so a "successful" test that produc
 no email means something ticked the hidden `botcheck` field — check you are not
 autofilling it.
 
+## Rate limiting
+
+| Guard | Limit | Scope |
+|---|---|---|
+| `IP_LIMITER` | 3 submissions / 60s | per visitor IP |
+| `CV_LIMITER` | 2 CV uploads / 60s | per visitor IP |
+| `GLOBAL_LIMITER` | 20 submissions / 60s | everyone (flood backstop) |
+| KV daily cap | 10 / day per IP, 200 / day total | protects the Resend monthly quota |
+| Body size | 12MB, rejected before parsing | any submission |
+
+Blocked requests get **429** and a message pointing them at info@aquamain.com.
+
+Cloudflare's limiter only accepts a `period` of 10 or 60 seconds, which is why the
+daily caps are kept separately in KV. Without them, 3/minute still works out at
+over 4,000 emails a day from a single address — enough to exhaust the Resend free
+tier in under 24 hours.
+
+Two deliberate choices:
+
+- **Only valid submissions count** toward the daily cap, so a bot spraying malformed
+  requests cannot use up a real visitor's allowance.
+- **The KV check fails open.** If KV is unavailable the submission goes through, on
+  the grounds that losing a genuine enquiry is worse than allowing an extra one —
+  the 60-second limiters are still in force regardless.
+
+To change any limit, edit `wrangler.toml` (or the constants at the top of `index.js`
+for the daily caps) and redeploy.
+
 ## Notes
 
 - `ALLOWED_ORIGINS` in `index.js` restricts who may post. It already lists

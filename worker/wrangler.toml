@@ -9,3 +9,40 @@ preview_urls = false
 
 # Secrets are NOT set here. Set them once, encrypted, with:
 #   npx wrangler secret put RESEND_API_KEY
+
+# --- Rate limiting -----------------------------------------------------------
+# `period` accepts only 10 or 60 seconds, so these cover bursts. The longer
+# daily caps live in KV below.
+
+# Any submission, per IP.
+[[ratelimits]]
+name = "IP_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 3
+  period = 60
+
+# CV uploads, per IP. Tighter — each one carries up to 10MB.
+[[ratelimits]]
+name = "CV_LIMITER"
+namespace_id = "1002"
+
+  [ratelimits.simple]
+  limit = 2
+  period = 60
+
+# Everyone, everywhere. Backstop against a distributed flood.
+[[ratelimits]]
+name = "GLOBAL_LIMITER"
+namespace_id = "1003"
+
+  [ratelimits.simple]
+  limit = 20
+  period = 60
+
+# --- Daily counters ----------------------------------------------------------
+# Protects the Resend monthly quota, which the 60s limiters alone cannot.
+[[kv_namespaces]]
+binding = "FORM_KV"
+id = "de680c3148e44c86ab17f5b18548013e"

@@ -25,6 +25,19 @@ const TO_CAREER = ['info@aquamain.com'];
 const MAX_CV_BYTES = 10 * 1024 * 1024; // 10MB, matches the "up to 10MB" hint on the form
 const ALLOWED_CV_TYPES = ['.pdf', '.doc', '.docx'];
 
+// Reject oversized bodies before parsing them, so a big upload cannot cost us
+// the work of decoding it. Allows headroom over MAX_CV_BYTES for form overhead.
+const MAX_BODY_BYTES = 12 * 1024 * 1024;
+
+// Daily caps, enforced in KV. The 60s rate limiters cannot express these, and
+// without them a single IP could still send thousands of emails a day and
+// exhaust the Resend monthly quota.
+const MAX_PER_IP_PER_DAY = 10;
+const MAX_TOTAL_PER_DAY = 200;
+const COUNTER_TTL_SECONDS = 172800; // 2 days — long enough to cover any timezone
+
+const TOO_MANY = 'Too many submissions. Please try again later, or email info@aquamain.com.';
+
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
@@ -41,6 +54,45 @@ function json(body, status, origin) {
     status,
     headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
   });
+}
+
+/** UTC date stamp, used to bucket the daily counters. */
+function dayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/**
+ * Increment and test the per-IP and global daily counters.
+ * KV is eventually consistent, so a determined attacker may overshoot slightly;
+ * that is an acceptable trade for the cost and simplicity.
+ * Fails OPEN — if KV misbehaves we would rather deliver a real enquiry than
+ * silently drop it, since the 60s limiters are still in force.
+ */
+async function withinDailyQuota(env, ip) {
+  if (!env.FORM_KV) return true;
+  const day = dayKey();
+  const ipKey = `ip:${ip}:${day}`;
+  const totalKey = `total:${day}`;
+  try {
+    const [ipRaw, totalRaw] = await Promise.all([
+      env.FORM_KV.get(ipKey),
+      env.FORM_KV.get(totalKey),
+    ]);
+    const ipCount = parseInt(ipRaw || '0', 10);
+    const totalCount = parseInt(totalRaw || '0', 10);
+    if (ipCount >= MAX_PER_IP_PER_DAY || totalCount >= MAX_TOTAL_PER_DAY) {
+      console.warn(`daily cap hit ip=${ip} ipCount=${ipCount} total=${totalCount}`);
+      return false;
+    }
+    await Promise.all([
+      env.FORM_KV.put(ipKey, String(ipCount + 1), { expirationTtl: COUNTER_TTL_SECONDS }),
+      env.FORM_KV.put(totalKey, String(totalCount + 1), { expirationTtl: COUNTER_TTL_SECONDS }),
+    ]);
+    return true;
+  } catch (err) {
+    console.error('KV quota check failed, allowing through:', err.message);
+    return true;
+  }
 }
 
 const esc = (s) =>
@@ -122,6 +174,21 @@ export default {
       return json({ success: false, message: 'Origin not allowed.' }, 403, origin);
     }
 
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+
+    // Cheapest checks first: reject before spending effort parsing the body.
+    const declared = parseInt(request.headers.get('Content-Length') || '0', 10);
+    if (declared > MAX_BODY_BYTES) {
+      return json({ success: false, message: 'That file is larger than 10MB.' }, 413, origin);
+    }
+
+    if (env.GLOBAL_LIMITER && !(await env.GLOBAL_LIMITER.limit({ key: 'all' })).success) {
+      return json({ success: false, message: TOO_MANY }, 429, origin);
+    }
+    if (env.IP_LIMITER && !(await env.IP_LIMITER.limit({ key: ip })).success) {
+      return json({ success: false, message: TOO_MANY }, 429, origin);
+    }
+
     let form;
     try {
       form = await request.formData();
@@ -150,6 +217,19 @@ export default {
     }
     if (!form.get('consent')) {
       return json({ success: false, message: 'Please tick the consent box.' }, 400, origin);
+    }
+
+    // CV uploads get their own, tighter burst limit.
+    if (type === 'career' && env.CV_LIMITER) {
+      if (!(await env.CV_LIMITER.limit({ key: ip })).success) {
+        return json({ success: false, message: TOO_MANY }, 429, origin);
+      }
+    }
+
+    // Only count submissions that have passed validation, so a bot spraying
+    // malformed requests cannot exhaust a legitimate visitor's daily allowance.
+    if (!(await withinDailyQuota(env, ip))) {
+      return json({ success: false, message: TOO_MANY }, 429, origin);
     }
 
     const name = `${firstName} ${lastName}`;
