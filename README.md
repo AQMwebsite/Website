@@ -9,6 +9,7 @@ Static site for **aquamain.com**, migrated from WordPress (June 2026 redesign). 
 - `assets/favicon/` — favicons.
 - `electricity-networks/`, `water-networks/`, `aquamain/` — redirect stubs for retired WordPress URLs (meta-refresh, since GitHub Pages can't do server-side 301s).
 - `CNAME` — tells GitHub Pages the custom domain. Don't delete.
+- `worker/` — the Cloudflare Worker that handles form submissions. Not part of the published site.
 - `sitemap.xml`, `robots.txt`, `404.html` — standard.
 
 ## One-time go-live steps
@@ -27,13 +28,15 @@ Static site for **aquamain.com**, migrated from WordPress (June 2026 redesign). 
 Repo → **Settings → Pages** → Source: **Deploy from a branch** → Branch `main`, folder `/ (root)` → Save.
 Then in **Custom domain** enter `aquamain.com` and save. Tick **Enforce HTTPS** once it becomes available (after DNS, below — the certificate can take up to ~24h).
 
-### 3. Web3Forms (contact + careers forms)
+### 3. Forms (Cloudflare Worker + Resend)
 
-1. Sign up free at <https://web3forms.com> using **info@aquamain.com** — you get an *access key* by email.
-2. In `contact/index.html`, replace `REPLACE_WITH_WEB3FORMS_ACCESS_KEY` (top of the file) with the key. Commit and push.
-3. In the Web3Forms dashboard you can add **sales@aquamain.com** as an additional recipient.
-4. **CV attachments:** file uploads need the Web3Forms **Pro** plan. On the free plan the careers form sends the applicant's details but not the CV file. Either upgrade, or reply to applicants asking them to email the CV.
-5. Send one real test through each form before and after DNS switch.
+The contact and careers forms post to a small Cloudflare Worker, which sends the mail
+via Resend. Free on both services. Full setup steps are in **`worker/README.md`** —
+in short: create the Resend account, verify the `send.aquamain.com` subdomain, deploy
+the Worker, then paste its URL into `contact/index.html` line 20.
+
+Enquiries go to info@ **and** sales@; CV submissions go to info@ with the file attached —
+matching what the old WordPress handler did.
 
 ### 4. DNS (at Heart Internet — nameservers ns.mainnameserver.com)
 
@@ -57,7 +60,7 @@ Delete/replace only the old A record pointing at `149.255.62.174` (the old web h
 
 ## What changed vs WordPress
 
-- Forms now go through **Web3Forms** instead of the PHP admin-ajax handler (`aquamain-contact-handler`).
+- Forms now go through a **Cloudflare Worker + Resend** (`worker/`) instead of the PHP admin-ajax handler (`aquamain-contact-handler`). Same behaviour: info@ + sales@ for enquiries, CV attached for careers.
 - All images are served locally from `assets/uploads/` instead of `wp-content/uploads`.
 - 301 redirects (SEOPress/Code Snippets) replaced by meta-refresh stub pages.
 - Cookie consent: the Complianz banner is gone. The site now sets no cookies itself; the only third-party embed is the SociableKit LinkedIn feed on the home page. Review the Cookie Policy page text against reality when convenient.

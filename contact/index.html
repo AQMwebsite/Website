@@ -17,7 +17,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/favicon-180.png">
 </head>
 <body>
-<script>window.W3F_KEY='REPLACE_WITH_WEB3FORMS_ACCESS_KEY';</script>
+<script>window.FORM_ENDPOINT='REPLACE_WITH_WORKER_URL';</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Karla:wght@400;500;600;700&display=swap');
 
@@ -388,7 +388,7 @@
 <div>
 <div class="card" id="formCard" style="padding:22px 22px">
 <h3 style="font-family:var(--head);font-size:18px;color:var(--navy);margin-bottom:14px">Send us a message</h3>
-<!-- Wired to Web3Forms (https://web3forms.com). Set the access key in window.W3F_KEY at the top of this file. -->
+<!-- Posts to the Cloudflare Worker form handler (worker/index.js). Set the URL in window.FORM_ENDPOINT at the top of this file. Goes to info@ + sales@. -->
 <form onsubmit="return submitForm(event)">
 <div class="row2"><div><label class="fl">First name <span class="req">*</span></label><input class="in" name="first_name" required=""/></div><div><label class="fl">Last name <span class="req">*</span></label><input class="in" name="last_name" required=""/></div></div>
 <div class="row2"><div><label class="fl">Email <span class="req">*</span></label><input class="in" name="email" required="" type="email"/></div><div><label class="fl">Company</label><input class="in" name="company"/></div></div>
@@ -401,7 +401,7 @@
 </div>
 </div>
 </section>
-<!-- Careers form wired to Web3Forms. NOTE: CV file attachments require the Web3Forms Pro plan. -->
+<!-- Careers form posts to the same Worker with form_type=career; the CV is attached to the email sent to info@. -->
 <section class="sec alt">
 <div class="kicker">Careers</div>
 <h2>Join the team</h2>
@@ -424,8 +424,8 @@
       var form=e.target, btn=form.querySelector('button[type=submit]'), label=btn.textContent;
       btn.disabled=true; btn.textContent='Sending\u2026';
       try{
-        var fd=new FormData(form); fd.append('access_key',window.W3F_KEY); fd.append('subject','Careers / CV submission \u2014 aquamain.com'); fd.append('from_name','Aquamain website');
-        var r=await fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
+        var fd=new FormData(form); fd.append('form_type','career');
+        var r=await fetch(window.FORM_ENDPOINT,{method:'POST',body:fd});
         var j=await r.json().catch(function(){return {};});
         if(j && j.success){
           document.getElementById('careerCard').innerHTML='<div class="success"><div class="tick">&#10003;</div><h3>Thanks &mdash; CV received</h3><p>We&rsquo;ll be in touch if a suitable role comes up.</p></div>';
@@ -490,8 +490,8 @@
     var form=e.target, btn=form.querySelector('button[type=submit]'), label=btn.textContent;
     btn.disabled=true; btn.textContent='Sending\u2026';
     try{
-      var fd=new FormData(form); fd.append('access_key',window.W3F_KEY); fd.append('subject','Website enquiry \u2014 aquamain.com'); fd.append('from_name','Aquamain website');
-      var r=await fetch('https://api.web3forms.com/submit',{method:'POST',body:fd});
+      var fd=new FormData(form); fd.append('form_type','enquiry');
+      var r=await fetch(window.FORM_ENDPOINT,{method:'POST',body:fd});
       var j=await r.json().catch(function(){return {};});
       if(j && j.success){
         document.getElementById("formCard").innerHTML='<div class="success"><div class="tick">&#10003;</div><h3>Thanks &mdash; message received</h3><p>Our team will be in touch.</p></div>';

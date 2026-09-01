@@ -1,0 +1,6 @@
+name = "aquamain-forms"
+main = "index.js"
+compatibility_date = "2026-09-01"
+
+# Secrets are NOT set here. Set them once, encrypted, with:
+#   npx wrangler secret put RESEND_API_KEY
