@@ -88,9 +88,19 @@
   .banner p{color:#C9D6E8;font-size:15px;margin-top:8px;max-width:46em;line-height:1.55}
 
   /* hero (home) */
-  .hero{background:var(--navy);padding:50px 36px 54px;display:grid;grid-template-columns:1.32fr .9fr;gap:46px;align-items:center}
+  .hero{position:relative;background:var(--navy-3);overflow:hidden;isolation:isolate}
+  .hero-bg{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center 42%}
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(15,30,60,.94),rgba(15,30,60,.72) 46%,rgba(15,30,60,.30))}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;z-index:1;background:linear-gradient(180deg,rgba(15,30,60,0),rgba(15,30,60,.72))}
+  .hero-inner{position:relative;z-index:2;max-width:760px;padding:92px 36px 128px}
+  .hero-eyebrow{font-family:var(--head);font-weight:700;font-size:12.5px;letter-spacing:2px;color:var(--orange);text-transform:uppercase;margin-bottom:16px;display:inline-flex;align-items:center;gap:10px}
+  .hero-eyebrow::before{content:"";width:26px;height:2px;background:var(--orange)}
+  .acc-plate{position:relative;z-index:3;margin:-80px 36px 0;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 22px 46px -20px rgba(15,30,60,.5);padding:18px 24px;display:flex;align-items:center;gap:24px}
+  .acc-plate .acc-label{font-family:var(--head);font-weight:700;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);flex:none}
+  .acc-plate .acc-imgs{display:flex;align-items:center;gap:16px;flex:1;flex-wrap:wrap;justify-content:space-between}
+  .acc-plate img{height:44px;width:auto;display:block}
   .eyebrow{font-family:var(--head);font-weight:700;font-size:12.5px;letter-spacing:2px;color:var(--orange);margin-bottom:16px}
-  .hero h1{font-family:var(--head);font-weight:800;font-size:45px;line-height:1.05;color:#fff;letter-spacing:-1px;margin-bottom:18px}
+  .hero h1{font-family:var(--head);font-weight:800;font-size:50px;line-height:1.05;color:#fff;letter-spacing:-1px;margin-bottom:18px}
   .hero p.sub{font-size:17px;line-height:1.55;color:#C9D6E8;max-width:32em;margin-bottom:26px}
   .btns{display:flex;gap:14px;flex-wrap:wrap}
   .hero-figure{display:flex;justify-content:center;align-items:center}
@@ -269,11 +279,11 @@
     .logo-sub{font-size:10.5px}
     .menu{display:none}
     .burger{display:block}
-    .hero{grid-template-columns:1fr;padding:30px 20px 34px;gap:22px}
-    .hero h1{font-size:29px}
+    .hero-inner{padding:52px 20px 92px}
+    .hero h1{font-size:30px}
     .hero p.sub{font-size:14.5px}
     .hero .btn{width:100%;justify-content:center}
-    .hero-photo{max-height:280px}
+    .acc-plate{margin:-72px 20px 0;flex-direction:column;align-items:flex-start;gap:14px;padding:16px 18px}.acc-plate .acc-imgs{gap:12px 16px;justify-content:flex-start}.acc-plate img{height:34px}
     .stats{grid-template-columns:1fr 1fr;gap:18px 12px;padding:24px 18px}
     .stat .n{font-size:30px}
     .sec{padding:30px 20px}
@@ -358,18 +368,30 @@
 <a href="/contact/">Contact</a>
 </div>
 <section class="hero">
-<div>
-<span class="logo-box logo-box-lg"><img decoding="async" alt="Aquamain" style="height:64px !important" class="hero-logo" src="/assets/uploads/Aquamain-Full-Colour-logo.svg"/></span>
-<h1>Independent Multi-Utility Contractor for Water &amp; Electricity Connections</h1>
+<img class="hero-bg" fetchpriority="high" decoding="async" width="1600" height="900" alt="Aquamain on-site team ensuring ground works meet water industry regulations" src="/assets/uploads/on-site-team-ensuring-ground-works-are-within-water-industry-regulations.jpg"/>
+<div class="hero-inner">
+<p class="hero-eyebrow">Independent SLP &amp; ICP · Southern England &amp; Wales</p>
+<h1>Water and electricity connections, designed, built and adopted.</h1>
+<p class="sub">One accredited contractor from first design to live supply, for housebuilders, developers and charge point operators.</p>
 <div class="btns">
-<a class="btn btn-primary" href="#services">Our services →</a>
-<a class="btn btn-ghost" href="/contact/">Get a quote →</a>
+<a class="btn btn-primary" href="/contact/">Request a quote →</a>
+<a class="btn btn-ghost" href="tel:+441749345842">Call +44 (0) 1749 345842</a>
 </div>
-</div>
-<div class="hero-figure">
-<img fetchpriority="high" decoding="async" width="800" height="534" alt="Aquamain on-site team ensuring ground works meet water industry regulations" class="hero-photo" src="/assets/uploads/on-site-team-ensuring-ground-works-are-within-water-industry-regulations.jpg"/>
 </div>
 </section>
+<div class="acc-plate">
+<span class="acc-label">Accredited</span>
+<span class="acc-imgs">
+<img decoding="async" alt="LRQA Accredited WIRS - Water Industry Registration Scheme" loading="lazy" src="/assets/uploads/LRQA-Accredited-WIRS-Water-Industry-Registration-Scheme.png"/>
+<img decoding="async" alt="LRQA Accredited NERS - National Electricity Registration Scheme" loading="lazy" src="/assets/uploads/LRQA-Accredited-NERS-National-Electricity-Registration-Scheme.png"/>
+<img decoding="async" alt="LRQA Certified ISO 9001 (UKAS)" loading="lazy" src="/assets/uploads/9001.jpg"/>
+<img decoding="async" alt="LRQA Certified ISO 14001 (UKAS)" loading="lazy" src="/assets/uploads/14001.jpg"/>
+<img decoding="async" alt="ISO 45001 (UKAS)" loading="lazy" src="/assets/uploads/45001.jpg"/>
+<img decoding="async" alt="CHAS Accredited Contractor" loading="lazy" src="/assets/uploads/Picture1.jpg"/>
+<img decoding="async" alt="SMAS Worksafe Accredited" loading="lazy" src="/assets/uploads/SMAS.jpg"/>
+<img decoding="async" alt="Constructionline Gold Member" loading="lazy" src="/assets/uploads/CONSTRUCTION-LINE-GOLD.png"/>
+</span>
+</div>
 
 <section class="sec alt" id="services">
 <div class="kicker">What we do</div>
