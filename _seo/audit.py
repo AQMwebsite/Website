@@ -97,7 +97,9 @@ def audit():
             "og_image": bool(s.find("meta", property="og:image")),
             "og_title": bool(s.find("meta", property="og:title")),
             "twitter_card": bool(s.find("meta", attrs={"name": "twitter:card"})),
-            "has_analytics": bool(re.search(r"gtag|googletagmanager|plausible|umami|fathom|matomo", html, re.I)),
+            "has_analytics": bool(re.search(
+                r"gtag|googletagmanager|cloudflareinsights|plausible|umami|fathom|matomo",
+                html, re.I)),
             "internal_links": len({a["href"] for a in s.find_all("a", href=True)
                                    if a["href"].startswith("/") and not a["href"].startswith("//")}),
             "breadcrumb_nav": bool(s.find("nav", class_="crumbs")),
