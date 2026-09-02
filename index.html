@@ -89,8 +89,8 @@
 
   /* hero (home) */
   .hero{position:relative;background:var(--navy-3);overflow:hidden;isolation:isolate}
-  .hero-bg{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center 42%}
-  .hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(15,30,60,.94),rgba(15,30,60,.72) 46%,rgba(15,30,60,.30))}
+  .hero-bg{position:absolute;top:0;right:0;bottom:0;z-index:0;width:66%;height:100%;object-fit:cover;object-position:center 40%}
+  .hero::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--navy-3) 0%,var(--navy-3) 34%,rgba(15,30,60,.85) 46%,rgba(15,30,60,.45) 68%,rgba(15,30,60,.15) 100%)}
   .hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;z-index:1;background:linear-gradient(180deg,rgba(15,30,60,0),rgba(15,30,60,.72))}
   .hero-inner{position:relative;z-index:2;max-width:760px;padding:60px 36px 120px}
   .hero-eyebrow{font-family:var(--head);font-weight:700;font-size:12.5px;letter-spacing:2px;color:var(--orange);text-transform:uppercase;margin-bottom:16px;display:inline-flex;align-items:center;gap:10px}
@@ -279,6 +279,8 @@
     .logo-sub{font-size:10.5px}
     .menu{display:none}
     .burger{display:block}
+    .hero-bg{width:100%;right:auto;left:0;object-position:center 40%}
+    .hero::before{background:linear-gradient(180deg,rgba(15,30,60,.5),rgba(15,30,60,.9))}
     .hero-inner{padding:40px 20px 88px}
     .hero h1{font-size:30px}
     .hero p.sub{font-size:14.5px}
