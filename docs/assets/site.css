@@ -277,6 +277,13 @@ a{color:inherit}
 .in:focus,.page select:focus,.page textarea:focus,.page input:focus{outline:3px solid var(--red-bright);outline-offset:1px}
 .filehint{font-size:13.5px;color:var(--ink-2);margin-top:6px}
 
+/* policy tables: scroll sideways on phones rather than squash */
+.tscroll{overflow-x:auto;margin-top:18px;max-width:100%}
+.tscroll table{margin-top:0;min-width:640px}
+.page th,.page td{text-align:left;vertical-align:top;border:1px solid var(--line);padding:10px 12px;line-height:1.5}
+.page th{background:var(--pale);color:var(--ink);font-weight:700}
+.page td{color:var(--ink-2)}
+
 @media (max-width:980px){
   .grid4,.grid5,.btiles{grid-template-columns:repeat(2,minmax(0,1fr))}
   .timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
