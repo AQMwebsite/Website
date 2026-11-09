@@ -67,7 +67,7 @@ a{color:inherit}
 .menu-btn{display:none;background:none;border:0;color:#fff;font:inherit;font-weight:600;padding:0 20px;cursor:pointer}
 
 /* ── hero ── */
-.hero{position:relative;overflow:hidden;background:var(--navy-deep) url('/assets/uploads/on-site-team-ensuring-ground-works-are-within-water-industry-regulations.jpg') center 35%/cover no-repeat;color:#fff}
+.hero{position:relative;overflow:hidden;background:var(--navy-deep) url('/assets/uploads/on-site-team-hero.webp') center 35%/cover no-repeat;color:#fff}
 .hero::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,27,54,.94) 0%,rgba(14,27,54,.84) 42%,rgba(14,27,54,.55) 100%)}
 .hero .wrap{position:relative;padding-top:clamp(92px,11vw,140px);padding-bottom:clamp(76px,9vw,120px)}
 .kicker{display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;color:#DDE4F0}
