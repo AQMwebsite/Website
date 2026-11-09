@@ -45,7 +45,7 @@ never written to this repo.
 
 ### 3. Point the site at it
 
-Put that URL into `contact/index.html`, line 20, replacing `REPLACE_WITH_WORKER_URL`:
+Put that URL into `docs/contact/index.html`, line 20, replacing `REPLACE_WITH_WORKER_URL`:
 
 ```html
 <script>window.FORM_ENDPOINT='https://aquamain-forms.xxxx.workers.dev';</script>

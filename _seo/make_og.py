@@ -11,7 +11,7 @@ LinkedIn and X actually display.
 import os
 from PIL import Image
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")  # the published site
 SRC = os.path.join(ROOT, "assets", "uploads",
                    "on-site-team-ensuring-ground-works-are-within-water-industry-regulations.jpg")
 OUT = os.path.join(ROOT, "assets", "uploads", "aquamain-social-1200x630.jpg")

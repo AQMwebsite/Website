@@ -6,7 +6,7 @@ import sys
 
 from bs4 import BeautifulSoup
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")  # the published site
 
 REQUIRED = {
     "ProfessionalService": ["name", "url", "telephone", "address"],

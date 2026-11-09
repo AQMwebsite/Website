@@ -20,7 +20,7 @@ import os
 import re
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")  # the published site
 MARK = "<!-- analytics -->"
 BEACON = ('{mark}\n<script defer src="https://static.cloudflareinsights.com/beacon.min.js" '
           'data-cf-beacon=\'{{"token": "{token}"}}\'></script>\n')

@@ -4,6 +4,8 @@ Static site for **aquamain.com**, migrated from WordPress (June 2026 redesign). 
 
 ## Structure
 
+The published website is everything in `docs/` (GitHub Pages publishes `main` → `/docs`). The paths below are inside `docs/`. `worker/`, `_seo/` and this README sit outside it, so they are never served.
+
 - `index.html` — home page. Every other page lives at `<slug>/index.html` so URLs keep their WordPress form (`/about-us/`, `/privacy-policy/`, …).
 - `assets/uploads/` — all images (downloaded from the old WordPress media library).
 - `assets/favicon/` — favicons.
@@ -25,7 +27,7 @@ Static site for **aquamain.com**, migrated from WordPress (June 2026 redesign). 
 
 ### 2. Enable GitHub Pages
 
-Repo → **Settings → Pages** → Source: **Deploy from a branch** → Branch `main`, folder `/ (root)` → Save.
+Repo → **Settings → Pages** → Source: **Deploy from a branch** → Branch `main`, folder `/docs` → Save.
 Then in **Custom domain** enter `aquamain.com` and save. Tick **Enforce HTTPS** once it becomes available (after DNS, below — the certificate can take up to ~24h).
 
 ### 3. Forms (Cloudflare Worker + Resend)
@@ -33,7 +35,7 @@ Then in **Custom domain** enter `aquamain.com` and save. Tick **Enforce HTTPS** 
 The contact and careers forms post to a small Cloudflare Worker, which sends the mail
 via Resend. Free on both services. Full setup steps are in **`worker/README.md`** —
 in short: create the Resend account, verify the `send.aquamain.com` subdomain, deploy
-the Worker, then paste its URL into `contact/index.html` line 20.
+the Worker, then paste its URL into `docs/contact/index.html` line 20.
 
 Enquiries go to info@ **and** sales@; CV submissions go to info@ with the file attached —
 matching what the old WordPress handler did.

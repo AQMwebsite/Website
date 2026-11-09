@@ -11,7 +11,7 @@ from datetime import date
 
 from PIL import Image
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")  # the published site
 SITE = "https://aquamain.com"
 ORG_ID = f"{SITE}/#organization"
 OG_IMG = f"{SITE}/assets/uploads/aquamain-social-1200x630.jpg"

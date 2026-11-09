@@ -11,7 +11,7 @@ from collections import Counter
 
 from bs4 import BeautifulSoup
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")  # the published site
 SITE = "https://aquamain.com"
 
 SKIP_DIRS = {".git", "_seo", "worker", "assets"}

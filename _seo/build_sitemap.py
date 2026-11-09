@@ -11,7 +11,7 @@ from xml.sax.saxutils import escape
 
 from bs4 import BeautifulSoup
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs")  # the published site
 SITE = "https://aquamain.com"
 
 PRIORITY = {"": "1.0", "about-us": "0.8", "contact": "0.8",

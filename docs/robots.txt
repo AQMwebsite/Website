@@ -1,9 +1,4 @@
 User-agent: *
 Allow: /
-# Maintenance files that live in the repo but are not part of the website
-Disallow: /worker/
-Disallow: /_seo/
-Disallow: /README.md
-Disallow: /.gitignore
 
 Sitemap: https://aquamain.com/sitemap.xml
